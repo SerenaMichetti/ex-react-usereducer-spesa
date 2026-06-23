@@ -17,6 +17,7 @@ function App() {
   function addToCart(product) {
     const isAdded = addedProducts.some(p => p.name === product.name)
     if (isAdded) {
+      updateProductQuantity(product)
       return
     }
     // lo aggiungo 
@@ -31,6 +32,23 @@ function App() {
     )
   }
 
+  function updateProductQuantity(product) {
+    const nuovoArray = addedProducts.map(element => {
+      if (element.name === product.name) {
+        return { ...element, quantity: element.quantity + 1 }
+      }
+      return element
+    })
+    setaddedProducts(nuovoArray)
+  }
+
+  function removeFromCart(product){
+   setaddedProducts(curr => curr.filter(p=> p.name !== product.name))
+  }
+
+  const totalPay= addedProducts.reduce((curr, product)=>{
+    return curr + (product.price * product.quantity)
+  },0)
   return (
     <>
       <h1>Lista prodotti:</h1>
@@ -41,15 +59,17 @@ function App() {
             <button onClick={() => addToCart(p)}>Aggiungi al carrello</button>
           </li>))}
       </ul>
-     {addedProducts.length > 0 && (<>
-      <h2>Prodotti nel carrello:</h2>
-           <ul>
-        {addedProducts.map((p, i) => (
-          <li key={i}>
-           {p.name} {p.price.toFixed(2)}€ x {p.quantity}
-          </li>))}
-      </ul>
-     </>)}
+      {addedProducts.length > 0 && (<>
+        <h2>Prodotti nel carrello:</h2>
+        <ul>
+          {addedProducts.map((p, i) => (
+            <li key={i}>
+              {p.name} {p.price.toFixed(2)}€ x {p.quantity}
+              <button onClick={() => removeFromCart(p)}>Rimuovi dal carrello</button>
+            </li>))}
+        </ul>
+        <h3>Totale da pagare: {totalPay.toFixed(2)}€</h3>
+      </>)}
     </>
   )
 }
